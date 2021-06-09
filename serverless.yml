@@ -1,0 +1,44 @@
+service:
+  name: mailgun-notification
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+resources:
+  # DynamoDB
+  - ${file(resources/dynamo-db.yml)}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-2
+
+functions:
+  saveRawNotification:
+    handler: src/functions/hello/handler.saveRawNotification
+    description: Save raw webhook
+    events:
+      - http:
+          path: mailgun-notification
+          method: post
+          cors: true
+
+  sendSNS:
+    handler: src/functions/hello/handler.sendSNS
+    description: Transform webhook and publish to SNS
+    events:
+      - http:
+          path: mailgun-notification/sns
+          method: post
+          cors: true
+
+iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem

@@ -1,0 +1,15 @@
+Resources:
+  RawWebhookTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: raw_webhook
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+      # Set the capacity
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
